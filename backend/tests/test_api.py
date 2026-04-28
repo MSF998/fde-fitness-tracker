@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from unittest.mock import patch
-from backend.main import app, get_db
+from backend.main import app
+from backend.api.dependencies import get_db
 from backend.db_client import DBClient
 
 # Use in-memory DB for tests
@@ -38,12 +39,18 @@ def test_log_workout():
     assert response.status_code == 200
     assert "id" in response.json()
 
-@patch("backend.main.LLMService")
-def test_generate_plan_api(mock_llm_class):
-    mock_llm = mock_llm_class.return_value
+from unittest.mock import MagicMock
+from backend.api.dependencies import get_llm
+
+def override_get_llm():
+    mock_llm = MagicMock()
     mock_llm.check_safety.return_value = (True, "")
     mock_llm.generate_plan.return_value = "Test plan: 10 pushups"
+    return mock_llm
 
+app.dependency_overrides[get_llm] = override_get_llm
+
+def test_generate_plan_api():
     profile_data = {"name": "Charlie", "goal": "strength"}
     resp = client.post("/profile", json=profile_data)
     user_id = resp.json()["id"]
