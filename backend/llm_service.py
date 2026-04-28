@@ -29,7 +29,6 @@ class LLMService:
         if not is_safe:
             return reason
             
-        from google import genai
         client = genai.Client(api_key=self.api_key)
         context = f"User Profile: {profile}. Workouts: {workouts}."
         prompt = f"Context: {context}\nUser Question: {message}\nAnswer as a helpful fitness assistant."

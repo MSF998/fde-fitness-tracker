@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from backend.main import app
-from backend.api.dependencies import get_db
+from backend.api.dependencies import get_db, get_llm
 from backend.db_client import DBClient
 
 # Use in-memory DB for tests
@@ -39,8 +39,7 @@ def test_log_workout():
     assert response.status_code == 200
     assert "id" in response.json()
 
-from unittest.mock import MagicMock
-from backend.api.dependencies import get_llm
+
 
 def override_get_llm():
     mock_llm = MagicMock()
