@@ -62,3 +62,27 @@ if st.button("View Progress", key="submit_progress"):
             st.info("No workouts logged.")
     else:
         st.error("Failed to load workouts.")
+
+st.header("AI Fitness Chat")
+c_user_id = st.number_input("User ID for Chat", min_value=1, step=1, key="chat_user_id")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+if prompt := st.chat_input("Ask a fitness question"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    response = requests.post(f"{API_URL}/chat", json={"user_id": c_user_id, "message": prompt})
+    if response.status_code == 200:
+        ans = response.json()["response"]
+        st.session_state.messages.append({"role": "assistant", "content": ans})
+        with st.chat_message("assistant"):
+            st.markdown(ans)
+    else:
+        st.error("Failed to chat.")

@@ -85,3 +85,20 @@ def test_progress_dash(mock_get):
 
     mock_get.assert_called_with("http://localhost:8000/workouts/1")
     assert len(at.dataframe) > 0
+
+@patch("frontend.app.requests.post")
+def test_chat_ui(mock_post):
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {"response": "Keep going!"}
+
+    at = AppTest.from_file("frontend/app.py")
+    at.run(timeout=15)
+    
+    at.number_input(key="chat_user_id").set_value(1)
+    at.chat_input[0].set_value("Motivation needed").run(timeout=15)
+
+    mock_post.assert_called_with(
+        "http://localhost:8000/chat",
+        json={"user_id": 1, "message": "Motivation needed"}
+    )
+    assert any("Keep going!" in m.value for m in at.markdown)

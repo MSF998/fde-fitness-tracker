@@ -46,6 +46,7 @@ def override_get_llm():
     mock_llm = MagicMock()
     mock_llm.check_safety.return_value = (True, "")
     mock_llm.generate_plan.return_value = "Test plan: 10 pushups"
+    mock_llm.chat.return_value = "Eat in a deficit."
     return mock_llm
 
 app.dependency_overrides[get_llm] = override_get_llm
@@ -73,3 +74,14 @@ def test_get_user_workouts():
     assert isinstance(data, list)
     assert len(data) == 1
     assert data[0]["type"] == "cycling"
+
+def test_chat_api():
+    profile_data = {"name": "Evan", "goal": "fat loss"}
+    resp = client.post("/profile", json=profile_data)
+    user_id = resp.json()["id"]
+
+    chat_data = {"user_id": user_id, "message": "How to burn belly fat?"}
+    response = client.post("/chat", json=chat_data)
+    assert response.status_code == 200
+    assert "response" in response.json()
+    assert "deficit" in response.json()["response"]

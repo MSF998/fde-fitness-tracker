@@ -4,6 +4,13 @@ class Profile(BaseModel):
     name: str
     goal: str
 
+class PlanResponse(BaseModel):
+    plan: str
+
+class ChatRequest(BaseModel):
+    user_id: int
+    message: str
+
 class Workout(BaseModel):
     user_id: int
     type: str
