@@ -2,8 +2,9 @@ import re
 from google import genai
 
 class LLMService:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, model_name: str = "gemini-2.5-flash"):
         self.api_key = api_key
+        self.model_name = model_name
 
     def check_safety(self, prompt: str) -> tuple[bool, str]:
         prompt_lower = prompt.lower()
@@ -18,7 +19,7 @@ class LLMService:
         client = genai.Client(api_key=self.api_key)
         prompt = f"Create a workout plan for {profile.get('name')} whose goal is {profile.get('goal')}."
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model=self.model_name,
             contents=prompt,
         )
         return response.text
