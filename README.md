@@ -5,8 +5,12 @@ An AI-powered fitness tracker built with FastAPI (backend) and Streamlit (fronte
 ## Architecture
 
 - **Frontend**: Streamlit UI (`frontend/app.py`)
-- **Backend**: FastAPI (`backend/main.py`)
-- **Database**: SQLite (`fitness.db`)
+- **Backend**: FastAPI
+  - `backend/main.py`: Entry point
+  - `backend/api/`: API Routers and Dependencies
+  - `backend/core/`: Configuration via `pydantic-settings`
+  - `backend/schemas.py`: Pydantic Models
+- **Database**: SQLite (`fitness.db`) via `backend/db_client.py`
 - **AI**: Gemini API Integration (`backend/llm_service.py`)
 
 ## Setup & Running
