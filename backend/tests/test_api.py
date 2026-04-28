@@ -58,3 +58,18 @@ def test_generate_plan_api():
     response = client.post("/generate", json={"user_id": user_id})
     assert response.status_code == 200
     assert "pushups" in response.json()["plan"]
+
+def test_get_user_workouts():
+    profile_data = {"name": "Dave", "goal": "cardio"}
+    resp = client.post("/profile", json=profile_data)
+    user_id = resp.json()["id"]
+
+    workout_data = {"user_id": user_id, "type": "cycling", "duration": 45, "calories": 400}
+    client.post("/workout", json=workout_data)
+
+    resp = client.get(f"/workouts/{user_id}")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert isinstance(data, list)
+    assert len(data) == 1
+    assert data[0]["type"] == "cycling"

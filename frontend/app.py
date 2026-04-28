@@ -48,3 +48,17 @@ if st.button("Generate Plan", key="submit_generate"):
         st.success(f"Plan: {data['plan']}")
     else:
         st.error(f"Failed to generate plan: {response.text}")
+
+st.header("Progress Dashboard")
+p_user_id = st.number_input("User ID for Dashboard", min_value=1, step=1, key="progress_user_id")
+
+if st.button("View Progress", key="submit_progress"):
+    response = requests.get(f"{API_URL}/workouts/{p_user_id}")
+    if response.status_code == 200:
+        data = response.json()
+        if data:
+            st.dataframe(data)
+        else:
+            st.info("No workouts logged.")
+    else:
+        st.error("Failed to load workouts.")

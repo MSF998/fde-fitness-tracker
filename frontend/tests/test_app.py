@@ -68,3 +68,20 @@ def test_generate_plan_form(mock_post):
     )
     assert len(at.success) > 0
     assert any("Plan: Do 10 pushups" in s.value for s in at.success)
+
+@patch("frontend.app.requests.get")
+def test_progress_dash(mock_get):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = [
+        {"id": 1, "user_id": 1, "type": "running", "duration": 30, "calories": 300}
+    ]
+
+    at = AppTest.from_file("frontend/app.py")
+    at.run(timeout=15)
+    
+    at.number_input(key="progress_user_id").set_value(1)
+    at.button(key="submit_progress").click()
+    at.run(timeout=15)
+
+    mock_get.assert_called_with("http://localhost:8000/workouts/1")
+    assert len(at.dataframe) > 0

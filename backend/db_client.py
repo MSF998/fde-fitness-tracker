@@ -59,3 +59,10 @@ class DBClient:
         if row:
             return dict(row)
         return {}
+
+    def get_user_workouts(self, user_id: int) -> list[dict]:
+        cursor = self.conn.execute(
+            "SELECT id, user_id, type, duration, calories FROM workouts WHERE user_id = ?",
+            (user_id,)
+        )
+        return [dict(row) for row in cursor.fetchall()]
